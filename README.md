@@ -5,7 +5,7 @@ I vibe coded an auto update script that has a good looking GUI to basically wrap
 
 A sleek, automated, dark-mode graphical interface for CachyOS system updates. Built with Python and CustomTkinter, this utility completely automates the terminal-based `cachy-update` process. 
 
-Designed for both traditional desktop environments and handheld gaming PCs (like the Lenovo Legion Go or Steam Deck) running Steam Game Mode. It acts as a smart virtual keyboard, automatically handling package confirmations, service restarts, and AUR reviews in the background while displaying a clean progress bar.
+Designed for both traditional desktop environments and handheld gaming PCs (like the Lenovo Legion Go) running Steam Game Mode. It acts as a smart virtual keyboard, automatically handling package confirmations, service restarts, and AUR reviews in the background while displaying a clean progress bar.
 
 ## ✨ Features
 * **Zero-Touch Automation:** Uses a Python pseudo-terminal (PTY) to automatically answer `[Y/n]` prompts, bypass Arch News blocks, and hit `0` for service restarts.
