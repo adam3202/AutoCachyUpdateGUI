@@ -1,6 +1,3 @@
-# AutoCachyUpdateGUI
-I coded an auto update script that has a good looking GUI to basically wrap and automate the Cachy-Updater. I decided to do this because I wanted the update process to be as hands free and painless as possible, seeing as how handhelds don't exactly have keyboards, AND I also wanted it to work from WITHIN steam mode. This script can be run on any laptop, desktop, and handheld PC running CachyOS.
-
 # CachyOS GUI Updater
 
 A sleek, automated, dark-mode graphical interface for CachyOS system updates. Built with Python and CustomTkinter, this utility completely automates the terminal-based `cachy-update` process. 
@@ -45,10 +42,33 @@ chmod +x ~/updater_gui.py
 ```
 
 **3. Launch**
-You can now run the app directly from your terminal or create a standard
+You can now run the app directly from your terminal or create a standard `.desktop` shortcut:
+```bash
+./updater_gui.py
+```
 
-(THE EXACT SCRIPT IS POSTED BELOW FOR SECURITY REVIEW)
+## 🎮 Steam Game Mode Setup (Handhelds)
+To use this as a native "1-Click" updater on a Legion Go or Steam Deck UI:
 
+1. Open Steam in Desktop Mode.
+2. Click **Games > Add a Non-Steam Game to My Library**.
+3. Click **Browse**, change the file filter to **"All Files"**, and select `updater_gui.py`.
+4. Right-click the new shortcut in your library, select **Properties**, and rename it to "CachyOS Updater".
+5. Return to **Game Mode**.
+6. Select the updater, open the **Controller Settings (Gear Icon > Edit Layout)**, and map your gamepad:
+   * Bind your controller's **X Button** to the keyboard **X key** (Closes the app when finished).
+   * Bind your controller's **Y Button** to the keyboard **Y key** (Toggles the hidden terminal output).
+
+***
+
+## 🔍 Source Code Audit
+
+For complete transparency and to verify the security of the automated inputs, the full `updater_gui.py` script is provided below. 
+
+<details>
+<summary><b>Click to expand and view the full Python source code</b></summary>
+
+```python
 #!/usr/bin/env python
 import customtkinter as ctk
 import subprocess
@@ -61,7 +81,7 @@ import re
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
 
-ANSI_ESCAPE = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]|\x1B\].*?(?:\x07|\x1B\\)')
+ANSI_ESCAPE = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]\vert{}\x1B\].*?(?:\x07|\x1B\\)')
 SYSTEMD_TAGS = re.compile(r'\]?\d{4};(?:start|end)=[a-f0-9]+(?:;[a-z]+=[^;\n]+)*')
 
 class CachyUpdaterApp(ctk.CTk):
@@ -239,3 +259,5 @@ class CachyUpdaterApp(ctk.CTk):
 if __name__ == "__main__":
     app = CachyUpdaterApp()
     app.mainloop()
+```
+</details>
