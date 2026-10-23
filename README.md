@@ -33,7 +33,10 @@ Add the following line at the very bottom (replace `yourusername` with your actu
 ```text
 yourusername ALL=(ALL) NOPASSWD: /usr/bin/pacman, /usr/bin/pacman-key, /usr/bin/systemctl, /usr/bin/rm -f /tmp/arch-update.lock
 ```
-Save and exit (`Ctrl + O`, `Enter`, `Ctrl + X`).
+
+> [!WARNING]
+> **Security Trade-Off**
+> This application requires adding `NOPASSWD` rules for `pacman` and `systemctl` to function without user intervention. While this provides a seamless, console-like experience on personal gaming handhelds, it intentionally bypasses a core Linux security layer. This configuration is **not recommended** for shared workstations or production servers, as it allows background processes on your user account to execute package management commands as root. Use at your own discretion.
 
 **2. Download the Script**
 Save the `updater_gui.py` file to your home directory (or any preferred application folder) and grant it executable permissions:
@@ -42,17 +45,4 @@ chmod +x ~/updater_gui.py
 ```
 
 **3. Launch**
-You can now run the app directly from your terminal or create a standard `.desktop` shortcut:
-```bash
-./updater_gui.py
-```
-
-## 🎮 Steam Game Mode Setup (Handhelds)
-To use this as a native "1-Click" updater on a Legion Go or Steam Deck UI:
-
-1. Open Steam in Desktop Mode.
-2. Click **Games > Add a Non-Steam Game to My Library**.
-3. Click **Browse**, change the file filter to **"All Files"**, and select `updater_gui.py`.
-4. Right-click the new shortcut in your library, select **Properties**, and rename it to "CachyOS Updater".
-5. Return to **Game Mode**.
-6. Select the updater, open the **Controller Settings
+You can now run the app directly from your terminal or create a standard
