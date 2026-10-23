@@ -47,6 +47,13 @@ chmod +x ~/updater_gui.py
 **3. Launch**
 You can now run the app directly from your terminal or create a standard
 
+
+
+
+
+
+
+
 The Exact script is posted below for review
 
 #!/usr/bin/env python
