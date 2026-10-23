@@ -9,12 +9,12 @@ Designed for both traditional desktop environments and handheld gaming PCs (like
 * **AUR Pager Bypass:** Automatically injects `PAGER="cat"` to prevent AUR package reviews from freezing the update process.
 * **Steam Game Mode Immunity:** Natively strips `LD_PRELOAD` from the environment to prevent Steam's 32-bit overlay injection from causing false-positive errors during execution.
 * **Handheld / Gamepad Ready:** Includes built-in hotkeys mapped to standard keyboard inputs (`X` to close, `Y` to toggle terminal) for seamless Steam Input controller integration.
-* **Fail-Safe Logging:** Keeps the raw terminal output hidden by default, but automatically drops down the console if any critical `ld.so` or `timeout` errors are detected.
+* **Fail-Safe Logging:** Keeps the raw terminal output hidden by default, but automatically drops down the console if any critical errors are detected.
 
 ## 📦 Prerequisites
-This script requires the `python-customtkinter` UI library. Install it via the AUR:
+This script requires the `python-customtkinter` UI library. Install it via the terminal:
 ```bash
-paru -S python-customtkinter
+sudo pacman -S python-customtkinter
 ```
 
 ## 🚀 Installation & Setup
@@ -28,12 +28,12 @@ sudo EDITOR=nano visudo
 ```
 Add the following line at the very bottom (replace `yourusername` with your actual Linux username):
 ```text
-yourusername ALL=(ALL) NOPASSWD: /usr/bin/pacman, /usr/bin/pacman-key, /usr/bin/systemctl, /usr/bin/rm -f /tmp/arch-update.lock
+yourusername ALL=(ALL) NOPASSWD: /usr/bin/pacman, /usr/bin/pacman-key, /usr/bin/systemctl, /usr/bin/paccache, /usr/bin/checkservices, /usr/bin/rm -f /tmp/arch-update.lock, /usr/bin/rm -r /var/cache/pacman/pkg/*
 ```
 
 > [!WARNING]
 > **Security Trade-Off**
-> This application requires adding `NOPASSWD` rules for `pacman` and `systemctl` to function without user intervention. While this provides a seamless, console-like experience on personal gaming handhelds, it intentionally bypasses a core Linux security layer. This configuration is **not recommended** for shared workstations or production servers, as it allows background processes on your user account to execute package management commands as root. Use at your own discretion.
+> This application requires adding `NOPASSWD` rules for `pacman`, `systemctl`, and cleanup utilities to function without user intervention. While this provides a seamless, console-like experience on personal gaming handhelds, it intentionally bypasses a core Linux security layer. This configuration is **not recommended** for shared workstations or production servers. Use at your own discretion.
 
 **2. Download the Script**
 Save the `updater_gui.py` file to your home directory (or any preferred application folder) and grant it executable permissions:
@@ -76,6 +76,8 @@ import threading
 import pty
 import os
 import re
+import fcntl
+import termios
 
 # Configure the window theme
 ctk.set_appearance_mode("Dark")
@@ -114,7 +116,7 @@ class CachyUpdaterApp(ctk.CTk):
 
         self.console = ctk.CTkTextbox(self, width=600, height=200, state="disabled", font=ctk.CTkFont(family="monospace", size=12), fg_color="#1e1e1e")
 
-        # HOTKEYS (Listens for keyboard presses)
+        # HOTKEYS
         self.bind("<Key-x>", self.safe_close)
         self.bind("<Key-X>", self.safe_close)
         self.bind("<Escape>", self.safe_close)
@@ -135,18 +137,17 @@ class CachyUpdaterApp(ctk.CTk):
             self.console_visible = True
 
     def safe_close(self, event=None):
-        """Allows the hotkey to close the app, but only if the update is completely finished."""
         if self.action_btn.cget("text") == "Close":
             self.destroy()
 
     def safe_toggle(self, event=None):
-        """Allows a hotkey to toggle the terminal drop-down."""
         self.toggle_terminal()
 
     def write_to_console(self, text):
         clean_text = ANSI_ESCAPE.sub('', text)
         clean_text = SYSTEMD_TAGS.sub('', clean_text)
         clean_text = clean_text.replace('==> Press "enter" to quit', '')
+        clean_text = clean_text.replace('\r', '') 
         
         self.console.configure(state="normal")
         self.console.insert("end", clean_text)
@@ -173,9 +174,15 @@ class CachyUpdaterApp(ctk.CTk):
         subprocess.run("sudo /usr/bin/rm -f /tmp/arch-update.lock", shell=True, env=clean_env)
         master, slave = pty.openpty()
         
+        def set_ctty():
+            os.setsid()
+            try:
+                fcntl.ioctl(0, termios.TIOCSCTTY, 0)
+            except Exception:
+                pass
+        
         try:
-            # LAUNCH WITHOUT SUDO to prevent AUR root-block
-            process = subprocess.Popen("cachy-update", shell=True, stdin=slave, stdout=slave, stderr=subprocess.STDOUT, close_fds=True, env=clean_env)
+            process = subprocess.Popen("cachy-update", shell=True, stdin=slave, stdout=slave, stderr=subprocess.STDOUT, close_fds=True, env=clean_env, preexec_fn=set_ctty)
             os.close(slave) 
             
             error_detected = False
