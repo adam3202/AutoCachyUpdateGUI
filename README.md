@@ -1,5 +1,5 @@
 # AutoCachyUpdateGUI
-I vibe coded an auto update script that has a good looking GUI to basically wrap and automate the Cachy-Updater. I decided to do this because I wanted the update process to be as hands free and painless as possible, seeing as how handhelds don't exactly have keyboards, AND I also wanted it to work from WITHIN steam mode. This script can be run on any laptop, desktop, and handheld PC running CachyOS.
+I coded an auto update script that has a good looking GUI to basically wrap and automate the Cachy-Updater. I decided to do this because I wanted the update process to be as hands free and painless as possible, seeing as how handhelds don't exactly have keyboards, AND I also wanted it to work from WITHIN steam mode. This script can be run on any laptop, desktop, and handheld PC running CachyOS.
 
 # CachyOS GUI Updater
 
