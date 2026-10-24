@@ -1,6 +1,6 @@
 # Game Mode GUI Updater (Auto Edition)
 
-A sleek, gamepad-friendly graphical interface designed specifically to update your Linux handheld natively inside Steam Game Mode. 
+A sleek, gamepad-friendly graphical interface designed specifically to update CachyOS handheld inside Steam Game Mode. 
 
 Traditional desktop package managers (like Shelly or Pamac) often crash Gamescope or freeze completely when asking for a root password via Polkit, forcing you to hard-reboot your device. This utility completely bypasses those freezes. Built with Python and CustomTkinter, it acts as a smart virtual keyboard that seamlessly wraps `cachy-update`, handling package confirmations, service restarts, and cache cleanups silently in the background.
 
