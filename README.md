@@ -48,7 +48,7 @@ You can now run the app directly from your terminal or create a standard `.deskt
 ```
 
 ## 🎮 Steam Game Mode Setup (Handhelds)
-To use this as a native "1-Click" updater on a Legion Go or Steam Deck UI:
+To use this as a native "1-Click" updater INSIDE Steam gamemode!:
 
 1. Open Steam in Desktop Mode.
 2. Click **Games > Add a Non-Steam Game to My Library**.
