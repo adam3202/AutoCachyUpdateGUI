@@ -1,15 +1,14 @@
-# CachyOS GUI Updater
+# Game Mode GUI Updater (Auto Edition)
 
-A sleek, automated, dark-mode graphical interface for CachyOS system updates. Built with Python and CustomTkinter, this utility completely automates the terminal-based `cachy-update` process. 
+A sleek, gamepad-friendly graphical interface designed specifically to update your Linux handheld natively inside Steam Game Mode. 
 
-Designed for both traditional desktop environments and handheld gaming PCs (like the Lenovo Legion Go) running Steam Game Mode. It acts as a smart virtual keyboard, automatically handling package confirmations, service restarts, and AUR reviews in the background while displaying a clean progress bar.
+Traditional desktop package managers (like Shelly or Pamac) often crash Gamescope or freeze completely when asking for a root password via Polkit, forcing you to hard-reboot your device. This utility completely bypasses those freezes. Built with Python and CustomTkinter, it acts as a smart virtual keyboard that seamlessly wraps `cachy-update`, handling package confirmations, service restarts, and cache cleanups silently in the background.
 
-## ✨ Features
-* **Zero-Touch Automation:** Uses a Python pseudo-terminal (PTY) to automatically answer `[Y/n]` prompts, bypass Arch News blocks, and hit `0` for service restarts.
-* **AUR Pager Bypass:** Automatically injects `PAGER="cat"` to prevent AUR package reviews from freezing the update process.
-* **Steam Game Mode Immunity:** Natively strips `LD_PRELOAD` from the environment to prevent Steam's 32-bit overlay injection from causing false-positive errors during execution.
-* **Handheld / Gamepad Ready:** Includes built-in hotkeys mapped to standard keyboard inputs (`X` to close, `Y` to toggle terminal) for seamless Steam Input controller integration.
-* **Fail-Safe Logging:** Keeps the raw terminal output hidden by default, but automatically drops down the console if any critical errors are detected.
+## ✨ Why This Exists (The Handheld Advantage)
+* **Gamescope Immunity:** Natively strips Steam's 32-bit `LD_PRELOAD` overlay injections and bypasses the Polkit GUI freeze entirely.
+* **Zero-Touch Automation:** Uses a Python pseudo-terminal (PTY) to automatically answer `[Y/n]` prompts, clear AUR Pager blocks, and restart services without ever requiring a virtual keyboard.
+* **Gamepad Native:** Includes built-in hotkeys mapped to standard controller inputs (`X` to close, `Y` to toggle the hidden terminal output) for a seamless console-like experience.
+* **Fail-Safe Logging:** Keeps the raw terminal output hidden by default, but automatically drops down the console if any critical system errors are detected.
 
 ## 📦 Prerequisites
 This script requires the `python-customtkinter` UI library. Install it via the terminal:
@@ -20,7 +19,7 @@ sudo pacman -S python-customtkinter
 ## 🚀 Installation & Setup
 
 **1. Configure Passwordless Sudo**
-To allow the updater to run silently without prompting for your admin password, you must add a rule for the backend package managers. (This allows the script to run as a standard user, preventing Arch Linux from blocking AUR installations). 
+To allow the updater to run silently without popping up a password prompt mid-update, you must whitelist the backend package managers. 
 
 Open the sudoers file:
 ```bash
@@ -33,37 +32,31 @@ yourusername ALL=(ALL) NOPASSWD: /usr/bin/pacman, /usr/bin/pacman-key, /usr/bin/
 
 > [!WARNING]
 > **Security Trade-Off**
-> This application requires adding `NOPASSWD` rules for `pacman`, `systemctl`, and cleanup utilities to function without user intervention. While this provides a seamless, console-like experience on personal gaming handhelds, it intentionally bypasses a core Linux security layer. This configuration is **not recommended** for shared workstations or production servers. Use at your own discretion.
+> This configuration provides a seamless, console-like experience by allowing background processes on your user account to execute package management commands as root. It is intentionally designed for personal gaming handhelds and is **not recommended** for shared workstations or production servers. 
 
 **2. Download the Script**
-Save the `updater_gui.py` file to your home directory (or any preferred application folder) and grant it executable permissions:
+Save the `updater_gui.py` file to your preferred folder and grant it executable permissions:
 ```bash
 chmod +x ~/updater_gui.py
 ```
 
-**3. Launch**
-You can now run the app directly from your terminal or create a standard `.desktop` shortcut:
-```bash
-./updater_gui.py
-```
-
-## 🎮 Steam Game Mode Setup (Handhelds)
-To use this as a native "1-Click" updater INSIDE Steam gamemode:
+## 🎮 Steam Game Mode Setup 
+To use this as a native "1-Click" updater on a Legion Go, Steam Deck, or HTPC:
 
 1. Open Steam in Desktop Mode.
 2. Click **Games > Add a Non-Steam Game to My Library**.
-3. Click **Browse**, change the file filter to **"All Files"**, and select `updater_gui.py`.
-4. Right-click the new shortcut in your library, select **Properties**, and rename it to "CachyOS Updater".
+3. Click **Browse**, select **"All Files"**, and choose `updater_gui.py`.
+4. Right-click the new shortcut in your library, select **Properties**, and rename it to "System Updater".
 5. Return to **Game Mode**.
-6. Select the updater, open the **Controller Settings (Gear Icon > Edit Layout)**, and map your gamepad:
+6. Select the updater, open **Controller Settings (Gear Icon > Edit Layout)**, and map your gamepad:
    * Bind your controller's **X Button** to the keyboard **X key** (Closes the app when finished).
-   * Bind your controller's **Y Button** to the keyboard **Y key** (Toggles the hidden terminal output).
+   * Bind your controller's **Y Button** to the keyboard **Y key** (Toggles the terminal output).
 
 ***
 
 ## 🔍 Source Code Audit
 
-For complete transparency and to verify the security of the automated inputs, the full `updater_gui.py` script is provided below. 
+For complete transparency, the full `updater_gui.py` script is provided below so you can verify exactly how the pseudo-terminal automation works.
 
 <details>
 <summary><b>Click to expand and view the full Python source code</b></summary>
@@ -90,7 +83,7 @@ class CachyUpdaterApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("CachyOS System Updater")
+        self.title("System Updater")
         self.geometry("650x480")
         self.resizable(False, False)
 
@@ -162,7 +155,7 @@ class CachyUpdaterApp(ctk.CTk):
         self.console.configure(state="normal")
         self.console.delete("0.0", "end")
         self.console.configure(state="disabled")
-        self.write_to_console("Initializing cachy-update...\n")
+        self.write_to_console("Initializing update...\n")
         
         threading.Thread(target=self.run_update_process, daemon=True).start()
 
